@@ -29,16 +29,14 @@ public class VideoPlayer {
     StringBuilder listOfVideos = new StringBuilder();
 
     for (Video video : videos.values()) {
-      if (video.isFlagged()) {
-        listOfVideos.append("  ").append(video.getTitle()).append(" ").append("(").append(video.getVideoId()).append(")").append(" ").append("[").append(String.join(" ",video.getTags())).append("]").append(" - FLAGGED (reason: ").append(video.getReason()).append(")").append("\n");
-      } else {
-        listOfVideos.append("  ").append(video.getTitle()).append(" ").append("(").append(video.getVideoId()).append(")").append(" ").append("[").append(String.join(" ",video.getTags())).append("]").append("\n");
-      }
+      listVideos(listOfVideos, video);
     }
 
     System.out.println("Here's a list of all available videos:\n" + listOfVideos);
 
   }
+
+
 
   public void playVideo(String videoId) {
 
@@ -191,7 +189,11 @@ public class VideoPlayer {
       StringBuilder builder = new StringBuilder();
 
       for (VideoPlaylist playlist : playlists.values()) {
-        builder.append("  ").append(playlist.getName()).append("\n");
+        if (playlist.getPlaylist().size() == 1) {
+          builder.append("  ").append(playlist.getName()).append(" (").append(1).append(" video)").append("\n");
+        } else {
+          builder.append("  ").append(playlist.getName()).append(" (").append(playlist.getPlaylist().size()).append(" videos)").append("\n");
+        }
       }
 
       System.out.println(builder);
@@ -199,7 +201,6 @@ public class VideoPlayer {
     }
 
   }
-
   public void showPlaylist(String playlistName) {
 
     if (!playlists.containsKey(playlistName.toLowerCase())) {
@@ -209,16 +210,13 @@ public class VideoPlayer {
       if (playlists.get(playlistName.toLowerCase()).getPlaylist().size() == 0) {
         System.out.println("  No videos here yet");
       } else {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder listOfVideos = new StringBuilder();
 
         for (Video video : playlists.get(playlistName.toLowerCase()).getPlaylist()) {
-          if (video.isFlagged()) {
-            builder.append("  ").append(video.getTitle()).append(" ").append("(").append(video.getVideoId()).append(")").append(" ").append("[").append(String.join(" ",video.getTags())).append("]").append(" - FLAGGED (reason: ").append(video.getReason()).append(")").append("\n");
-          } else {
-            builder.append("  ").append(video.getTitle()).append(" ").append("(").append(video.getVideoId()).append(")").append(" ").append("[").append(String.join(" ",video.getTags())).append("]").append("\n");
-          }}
+          listVideos(listOfVideos, video);
+        }
 
-        System.out.print(builder);
+        System.out.print(listOfVideos);
       }
     }
 
@@ -333,6 +331,14 @@ public class VideoPlayer {
       System.out.println("Cannot remove flag from video: Video does not exist");
     }
 
+  }
+
+  private void listVideos(StringBuilder listOfVideos, Video video) {
+    if (video.isFlagged()) {
+      listOfVideos.append("  ").append(video.getTitle()).append(" ").append("(").append(video.getVideoId()).append(")").append(" ").append("[").append(String.join(" ",video.getTags())).append("]").append(" - FLAGGED (reason: ").append(video.getReason()).append(")").append("\n");
+    } else {
+      listOfVideos.append("  ").append(video.getTitle()).append(" ").append("(").append(video.getVideoId()).append(")").append(" ").append("[").append(String.join(" ",video.getTags())).append("]").append("\n");
+    }
   }
 
   public void getSearchResults(String searchTerm, TreeMap<String, Video> videos) {
